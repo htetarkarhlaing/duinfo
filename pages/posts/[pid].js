@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Header from "@components/Header";
 import Footer from "@components/Footer";
-import Post from "@components/Post";
 import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
-
-const URL = "https://du-server.herokuapp.com";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
   root: {
@@ -26,25 +24,31 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Home() {
+const URL = "https://du-server.herokuapp.com";
+
+export default function Posts() {
   const classes = useStyles();
-  const [posts, setPosts] = useState();
+  const router = useRouter();
+  const { pid } = router.query;
+
+  const [routes, setRoutes] = useState();
 
   const postFetcher = () => {
-    fetch(`${URL}/api/posts`, {
+    fetch(`${URL}/api/routes/${pid}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
       .then((resJson) => {
         if (resJson.meta.success === true) {
-          setPosts(resJson.data);
+          console.log(resJson);
+          setPostDetail(resJson.data);
         } else {
-          setPosts([]);
+          setPostDetail([]);
         }
       })
       .catch((err) => {
-        setPosts([]);
+        setPostDetail([]);
       });
   };
   useEffect(() => {
@@ -60,25 +64,9 @@ export default function Home() {
       <Header />
       <Container maxWidth="xl" className={classes.body}>
         <Typography variant="h6" className={classes.headingText}>
-          Posts
+          Posts/{}
         </Typography>
-        <Grid container justify="center">
-          {posts && posts !== undefined && posts.length !== 0
-            ? posts.map((data, key) => {
-                return (
-                  <Post
-                    key={key}
-                    id={data.post_id}
-                    author={data.created_by}
-                    title={data.post_title}
-                    desc={data.post_desc}
-                    updated={data.updated_at}
-                    date={data.date}
-                  />
-                );
-              })
-            : "No Event Avaliable"}
-        </Grid>
+        <Grid container justify="center"></Grid>
       </Container>
       <Footer />
     </div>

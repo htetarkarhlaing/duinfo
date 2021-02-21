@@ -9,10 +9,11 @@ import {
   Avatar,
   IconButton,
   Typography,
-  Grid
+  Grid,
 } from "@material-ui/core";
 import { red } from "@material-ui/core/colors";
 import LaunchIcon from "@material-ui/icons/Launch";
+import Link from "next/link";
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -34,37 +35,43 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Post() {
+export default function Post(props) {
   const classes = useStyles();
 
   return (
     <Grid item sm={12} md={4}>
-      <Card>
-        <CardHeader
-          avatar={
-            <Avatar aria-label="recipe" className={classes.avatar}></Avatar>
-          }
-          title="Shrimp and Chorizo Paella"
-          subheader="September 14, 2016"
-        />
-        <CardMedia
-          className={classes.media}
-          image="/du-bg.jpeg"
-          title="Du Info"
-        />
-        <CardContent>
-          <Typography variant="body2" color="textSecondary" component="p">
-            This impressive paella is a perfect party dish and a fun meal to
-            cook together with your guests. Add 1 cup of frozen peas along with
-            the mussels, if you like.
-          </Typography>
-        </CardContent>
-        <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <LaunchIcon />
-          </IconButton>
-        </CardActions>
-      </Card>
+       <Link href={`/posts/${encodeURIComponent(props.id)}`}>
+        <Card>
+          <CardHeader
+            avatar={
+              <Avatar aria-label="recipe" className={classes.avatar}></Avatar>
+            }
+            title={props.author}
+            subheader={props.updated}
+          />
+          <CardMedia
+            className={classes.media}
+            image="/du-bg.jpeg"
+            title="Du Info"
+          />
+          <CardContent>
+            <Typography variant="h6" color="primary">
+              {props.title}
+            </Typography>
+            <Typography variant="body2" color="textPrimary">
+              ရက်စွဲ - {props.date}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {props.desc}
+            </Typography>
+          </CardContent>
+          <CardActions disableSpacing>
+            <IconButton aria-label="open">
+              <LaunchIcon />
+            </IconButton>
+          </CardActions>
+        </Card>
+      </Link>
     </Grid>
   );
 }

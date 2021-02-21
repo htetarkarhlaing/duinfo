@@ -22,13 +22,13 @@ const useStyles = makeStyles({
   },
 });
 
-const PostCreate = () => {
+const AddAdmins = () => {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <Head>
-        <title>DU INFO || Dagon Student Union Informations</title>
+        <title>DU INFO | Dagon Student Union Informations</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
@@ -43,4 +43,4 @@ const PostCreate = () => {
   );
 };
 
-export default PostCreate;
+export default AddAdmins;
