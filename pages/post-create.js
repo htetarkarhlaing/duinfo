@@ -1,8 +1,7 @@
+import React from "react";
 import Head from "next/head";
-import Header from "@components/Header";
-import Footer from "@components/Footer";
-import Post from "@components/Post";
 import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
+import Header from "@components/Header";
 
 const useStyles = makeStyles({
   root: {
@@ -10,21 +9,22 @@ const useStyles = makeStyles({
     height: "100vh",
     padding: 0,
     margin: 0,
-    backgroundColor: '#00695f'
+    backgroundColor: "#00695f",
   },
   body: {
-    width: '100%',
-    minHeight: '80vh',
-    backgroundColor: '#f0f0f0'
+    width: "100%",
+    minHeight: "80vh",
+    backgroundColor: "#f0f0f0",
   },
   headingText: {
-    padding: '10px',
-    fontWeight: 'bolder'
-  }
+    padding: "10px",
+    fontWeight: "bolder",
+  },
 });
 
-export default function Home() {
+const PostCreate = () => {
   const classes = useStyles();
+
   return (
     <div className={classes.root}>
       <Head>
@@ -33,12 +33,14 @@ export default function Home() {
       </Head>
       <Header />
       <Container maxWidth="xl" className={classes.body}>
-        <Typography variant="h6" className={classes.headingText}>Posts</Typography>
         <Grid container justify="center">
-          <Post />
+          <Grid item xs={12} md={4}>
+            <Typography>Create New Event</Typography>
+          </Grid>
         </Grid>
       </Container>
-      <Footer />
     </div>
   );
-}
+};
+
+export default PostCreate;

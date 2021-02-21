@@ -1,11 +1,15 @@
-import styles from './Footer.module.css'
+import React from "react";
+import { Container, Typography } from "@material-ui/core";
 
-export default function Footer() {
+const Footer = () => {
   return (
-    <>
-      <footer className={styles.footer}>
-        Made with <img src="/netliheart.svg" alt="Netlify Logo" className={styles.logo} /> for you
-      </footer>
-    </>
-  )
-}
+    <Container style={{padding: '10px', backgroundColor: '#00695f', color: '#ffffff'}}>
+      <Typography variant="body2" align="center">
+        Code with love for Dagon University Student Union.
+      </Typography>
+      <Typography variant="h6" align="center" style={{fontWeight: 'bolder'}}>https://du-info.netlify.app</Typography>
+    </Container>
+  );
+};
+
+export default Footer;
