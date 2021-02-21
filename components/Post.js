@@ -39,7 +39,7 @@ export default function Post(props) {
   const classes = useStyles();
 
   return (
-    <Grid item sm={12} md={4}>
+    <Grid item sm={12} md={4} style={{marginBottom: '10px'}}>
        <Link href={`/posts/${encodeURIComponent(props.id)}`}>
         <Card>
           <CardHeader

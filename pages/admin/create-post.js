@@ -40,6 +40,7 @@ const useStyles = makeStyles({
   },
   formController: {
     marginTop: "10px",
+    lineHeight: 1.5
   },
   button: {
     marginTop: "10px",
