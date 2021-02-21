@@ -3,7 +3,7 @@ import Head from "next/head";
 import AdminHeader from "@components/AdminHeader";
 import Footer from "@components/Footer";
 import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
-import AdminPostCard from "@components/AdminPostCard";
+import AdminCard from "@components/AdminCard";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 
@@ -30,36 +30,35 @@ const useStyles = makeStyles({
 
 export default function AdminHome() {
   const router = useRouter();
-  const classes = useStyles();
-  const [posts, setPosts] = useState();
-
   const login = Cookies.get("login");
   const username = Cookies.get("username");
 
   useEffect(() => {
-    console.log(login, username);
-    if (login !== undefined && username == undefined) {
+    if (login !== true && username == "") {
       router.push("/login");
     } else {
       return null;
     }
   }, []);
+  const classes = useStyles();
+  const [adminList, setAdminList] = useState();
 
   const postFetcher = () => {
-    fetch(`${URL}/api/posts`, {
+    fetch(`${URL}/api/admins`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
       .then((resJson) => {
         if (resJson.meta.success === true) {
-          setPosts(resJson.data);
+            console.log(resJson);
+          setAdminList(resJson.data);
         } else {
-          setPosts([]);
+          setAdminList([]);
         }
       })
       .catch((err) => {
-        setPosts([]);
+        setAdminList([]);
       });
   };
   useEffect(() => {
@@ -75,24 +74,14 @@ export default function AdminHome() {
       <AdminHeader />
       <Container maxWidth="xl" className={classes.body}>
         <Typography variant="h6" className={classes.headingText}>
-          Post List
+          Admin List
         </Typography>
         <Grid container justify="center">
-          {posts && posts !== undefined && posts.length !== 0
-            ? posts.map((data, key) => {
-                return (
-                  <AdminPostCard
-                    key={key}
-                    id={data.post_id}
-                    author={data.created_by}
-                    title={data.post_title}
-                    desc={data.post_desc}
-                    updated={data.updated_at}
-                    date={data.date}
-                  />
-                );
+          {adminList && adminList !== undefined && adminList.length !== 0
+            ? adminList.map((data, key) => {
+                return <AdminCard />;
               })
-            : "No Event Avaliable"}
+            : "No admin Found"}
         </Grid>
       </Container>
       <Footer />

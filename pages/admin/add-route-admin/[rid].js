@@ -7,11 +7,9 @@ import {
   makeStyles,
   Button,
   FormControl,
-  OutlinedInput,
+  Select,
   InputLabel,
-  TextField,
-  Paper,
-  Divider,
+  MenuItem,
 } from "@material-ui/core";
 import AdminHeader from "@components/AdminHeader";
 import Cookies from "js-cookie";
@@ -45,22 +43,19 @@ const useStyles = makeStyles({
     marginTop: "10px",
     lineHeight: 1.5,
   },
-  buttonWrapper: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingTop: "10px",
-    marginTop: "20px",
-  },
   button: {
     marginTop: "10px",
   },
 });
 
-const AddAdmin = () => {
+const AddRouteAdmin = () => {
+  const classes = useStyles();
+
   const router = useRouter();
   const login = Cookies.get("login");
   const username = Cookies.get("username");
+
+  const { rid } = router.query;
 
   useEffect(() => {
     if (login !== true && username == "") {
@@ -69,46 +64,61 @@ const AddAdmin = () => {
       return null;
     }
   }, []);
-  const classes = useStyles();
 
-  const [adminData, setAdminData] = useState({
-    name: "",
-    phone: "",
-    phoneOne: "",
-  });
+  const [adminId, setAdminId] = useState("pre");
+
+  const [adminList, setAdminList] = useState();
+
+  const adminFetcher = () => {
+    fetch(`${URL}/api/admins`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((resJson) => {
+        if (resJson.meta.success === true) {
+          setAdminList(resJson.data);
+        } else {
+          setAdminList([]);
+        }
+      })
+      .catch((err) => {
+        setAdminList([]);
+      });
+  };
+
+  useEffect(() => {
+    adminFetcher();
+  }, []);
 
   const [btnHandler, setBtnHandler] = useState(true);
 
   const handleChange = (evt) => {
-    const { name, value } = evt.target;
-
-    setAdminData({
-      ...adminData,
-      [name]: value,
-    });
+    const { value } = evt.target;
+    setAdminId(value);
   };
 
   useEffect(() => {
-    if (adminData.name !== "" && adminData.phone !== "") {
+    if (adminId !== "0") {
       setBtnHandler(false);
     } else {
       setBtnHandler(true);
     }
-  }, [adminData]);
+  }, [adminId]);
 
   const postUploader = () => {
     setBtnHandler(true);
-    fetch(`${URL}/api/admins/create`, {
+    fetch(`${URL}/api/route-detail/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: adminData.name,
-        phoneOne: adminData.desc,
-        phoneTwo: adminData.date,
+        adminId: adminId,
+        routeId: rid,
       }),
     })
       .then((res) => res.json())
       .then((resJson) => {
+        console.log(resJson);
         if (resJson.meta.success === true) {
           window.alert("Success!");
         } else {
@@ -136,57 +146,30 @@ const AddAdmin = () => {
                 align="center"
                 className={classes.headingText}
               >
-                Create New Admin Info
+                Add New Admin To Route
               </Typography>
-              <FormControl
-                variant="outlined"
-                className={classes.formController}
-              >
-                <InputLabel>Admin Name</InputLabel>
-                <OutlinedInput
-                  label="Admin Name"
-                  variant="outlined"
-                  color="primary"
-                  type="text"
-                  name="name"
+              {/* username */}
+              <FormControl className={classes.selecterWrapper}>
+                <InputLabel id="select-label">Branch</InputLabel>
+                <Select
+                  labelId="select-label"
+                  value={adminId}
                   onChange={handleChange}
-                  labelWidth={70}
-                  value={adminData.name}
-                />
-              </FormControl>
-
-              <FormControl
-                variant="outlined"
-                className={classes.formController}
-              >
-                <InputLabel>Phone One</InputLabel>
-                <OutlinedInput
-                  label="Phone One"
-                  variant="outlined"
-                  color="primary"
-                  type="text"
-                  name="phone"
-                  onChange={handleChange}
-                  labelWidth={70}
-                  value={adminData.phone}
-                />
-              </FormControl>
-
-              <FormControl
-                variant="outlined"
-                className={classes.formController}
-              >
-                <InputLabel>Phone Two</InputLabel>
-                <OutlinedInput
-                  label="Phone Two"
-                  variant="outlined"
-                  color="primary"
-                  type="text"
-                  name="phoneOne"
-                  onChange={handleChange}
-                  labelWidth={70}
-                  value={adminData.phoneOne}
-                />
+                  className={classes.selecter}
+                >
+                    <MenuItem value="pre">Select An Admin</MenuItem>
+                  {adminList ? (
+                    adminList.map((data, key) => {
+                      return (
+                        <MenuItem value={data.admin_id} key={key}>
+                          {data.admin_name}
+                        </MenuItem>
+                      );
+                    })
+                  ) : (
+                    <MenuItem value="pre">No Admin Found</MenuItem>
+                  )}
+                </Select>
               </FormControl>
 
               <Button
@@ -200,17 +183,10 @@ const AddAdmin = () => {
               </Button>
             </form>
           </Grid>
-
-          <Grid item xs={12} md={4} className={classes.buttonWrapper}>
-            <Divider />
-            <Button variant="contained" color="primary">
-              Click Here To View Admin List
-            </Button>
-          </Grid>
         </Grid>
       </Container>
     </div>
   );
 };
 
-export default AddAdmin;
+export default AddRouteAdmin;

@@ -11,8 +11,9 @@ import {
   InputLabel,
   TextField,
 } from "@material-ui/core";
-import Header from "@components/Header";
-import Cookies from "js-cookies";
+import AdminHeader from "@components/AdminHeader";
+import Cookies from "js-cookie";
+import { useRouter } from 'next/router'
 
 const URL = "https://du-server.herokuapp.com";
 
@@ -40,7 +41,7 @@ const useStyles = makeStyles({
   },
   formController: {
     marginTop: "10px",
-    lineHeight: 1.5
+    lineHeight: 1.5,
   },
   button: {
     marginTop: "10px",
@@ -48,6 +49,17 @@ const useStyles = makeStyles({
 });
 
 const PostCreate = () => {
+  const router = useRouter();
+  const login = Cookies.get("login");
+  const username = Cookies.get("username");
+
+  useEffect(() => {
+    if (login !== true && username == "") {
+      router.push("/login");
+    } else {
+      return null;
+    }
+  }, []);
   const classes = useStyles();
 
   const [postData, setPostData] = useState({
@@ -77,6 +89,7 @@ const PostCreate = () => {
   }, [postData]);
 
   const postUploader = () => {
+    setBtnHandler(true);
     fetch(`${URL}/api/posts/create`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -85,19 +98,19 @@ const PostCreate = () => {
         desc: postData.desc,
         date: postData.date,
         note: postData.note,
-        author: Cookies.getItem("username") || "Admin",
-      })
+        author: Cookies.get("username") || "Admin",
+      }),
     })
       .then((res) => res.json())
       .then((resJson) => {
         if (resJson.meta.success === true) {
-          window.alert("Success!")
+          window.alert("Success!");
         } else {
-            window.alert("Failed!")
+          window.alert("Failed!");
         }
       })
       .catch((err) => {
-        window.alert("Opps, something went wrong!")
+        window.alert("Opps, something went wrong!");
       });
   };
 
@@ -107,7 +120,7 @@ const PostCreate = () => {
         <title>DU INFO | Dagon Student Union Informations</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Header />
+      <AdminHeader />
       <Container maxWidth="xl" className={classes.body}>
         <Grid container justify="center">
           <Grid item xs={12} md={4}>

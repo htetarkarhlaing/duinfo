@@ -9,11 +9,8 @@ import {
   FormControl,
   OutlinedInput,
   InputLabel,
-  TextField,
-  Paper,
-  Divider,
 } from "@material-ui/core";
-import AdminHeader from "@components/AdminHeader";
+import Header from "@components/Header";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 
@@ -57,24 +54,25 @@ const useStyles = makeStyles({
   },
 });
 
-const AddAdmin = () => {
-  const router = useRouter();
+const Login = () => {
+  const classes = useStyles();
+
   const login = Cookies.get("login");
   const username = Cookies.get("username");
 
-  useEffect(() => {
-    if (login !== true && username == "") {
-      router.push("/login");
+  const router = useRouter();
+
+   useEffect(() => {
+    if (login === true && username.toString() !== "") {
+        router.push("/admin/");
     } else {
-      return null;
+        return null
     }
   }, []);
-  const classes = useStyles();
 
-  const [adminData, setAdminData] = useState({
-    name: "",
+  const [userData, setUserData] = useState({
     phone: "",
-    phoneOne: "",
+    password: "",
   });
 
   const [btnHandler, setBtnHandler] = useState(true);
@@ -82,37 +80,41 @@ const AddAdmin = () => {
   const handleChange = (evt) => {
     const { name, value } = evt.target;
 
-    setAdminData({
-      ...adminData,
+    setUserData({
+      ...userData,
       [name]: value,
     });
   };
 
   useEffect(() => {
-    if (adminData.name !== "" && adminData.phone !== "") {
+    if (userData.phone !== "" && userData.password !== "") {
       setBtnHandler(false);
     } else {
       setBtnHandler(true);
     }
-  }, [adminData]);
+  }, [userData]);
 
   const postUploader = () => {
     setBtnHandler(true);
-    fetch(`${URL}/api/admins/create`, {
+    fetch(`${URL}/api/users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: adminData.name,
-        phoneOne: adminData.desc,
-        phoneTwo: adminData.date,
+        phone: userData.phone,
+        password: userData.password,
       }),
     })
       .then((res) => res.json())
       .then((resJson) => {
         if (resJson.meta.success === true) {
-          window.alert("Success!");
+          Cookies.set("login", true, { expires: 7 });
+          Cookies.set("username", resJson.data[0].user_name, {
+            expires: 7,
+          });
+          window.alert("Login Success!");
+          router.push("/admin")
         } else {
-          window.alert("Failed!");
+          window.alert("Login Failed!");
         }
       })
       .catch((err) => {
@@ -126,7 +128,7 @@ const AddAdmin = () => {
         <title>DU INFO | Dagon Student Union Informations</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <AdminHeader />
+      <Header />
       <Container maxWidth="xl" className={classes.body}>
         <Grid container justify="center">
           <Grid item xs={12} md={4}>
@@ -136,39 +138,22 @@ const AddAdmin = () => {
                 align="center"
                 className={classes.headingText}
               >
-                Create New Admin Info
+                Login
               </Typography>
               <FormControl
                 variant="outlined"
                 className={classes.formController}
               >
-                <InputLabel>Admin Name</InputLabel>
+                <InputLabel>Phone</InputLabel>
                 <OutlinedInput
-                  label="Admin Name"
-                  variant="outlined"
-                  color="primary"
-                  type="text"
-                  name="name"
-                  onChange={handleChange}
-                  labelWidth={70}
-                  value={adminData.name}
-                />
-              </FormControl>
-
-              <FormControl
-                variant="outlined"
-                className={classes.formController}
-              >
-                <InputLabel>Phone One</InputLabel>
-                <OutlinedInput
-                  label="Phone One"
+                  label="Phone"
                   variant="outlined"
                   color="primary"
                   type="text"
                   name="phone"
                   onChange={handleChange}
                   labelWidth={70}
-                  value={adminData.phone}
+                  value={userData.phone}
                 />
               </FormControl>
 
@@ -176,16 +161,16 @@ const AddAdmin = () => {
                 variant="outlined"
                 className={classes.formController}
               >
-                <InputLabel>Phone Two</InputLabel>
+                <InputLabel>Password</InputLabel>
                 <OutlinedInput
-                  label="Phone Two"
+                  label="Password"
                   variant="outlined"
                   color="primary"
-                  type="text"
-                  name="phoneOne"
+                  type="password"
+                  name="password"
                   onChange={handleChange}
                   labelWidth={70}
-                  value={adminData.phoneOne}
+                  value={userData.password}
                 />
               </FormControl>
 
@@ -196,16 +181,9 @@ const AddAdmin = () => {
                 onClick={postUploader}
                 disabled={btnHandler}
               >
-                Save
+                Login
               </Button>
             </form>
-          </Grid>
-
-          <Grid item xs={12} md={4} className={classes.buttonWrapper}>
-            <Divider />
-            <Button variant="contained" color="primary">
-              Click Here To View Admin List
-            </Button>
           </Grid>
         </Grid>
       </Container>
@@ -213,4 +191,4 @@ const AddAdmin = () => {
   );
 };
 
-export default AddAdmin;
+export default Login;
