@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AdminRouteShower = (props) => {
+const RouteShower = (props) => {
   const classes = useStyles();
 
   const [open, setOpen] = useState(true);
